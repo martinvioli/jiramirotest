@@ -12,8 +12,12 @@ export default class WebhookController {
 
   async miroWebhook(ctx: HttpContextContract) {
     const body = ctx.request.body()
-    const adapter = new Adapter<MiroService, JiraService>(MiroService, JiraService)
-    await adapter.connect(body)
-    return body
+    try {
+      const adapter = new Adapter<MiroService, JiraService>(MiroService, JiraService)
+      await adapter.connect(body)
+      return body
+    } catch (err) {
+      return body
+    }
   }
 }
