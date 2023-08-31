@@ -1,5 +1,3 @@
-import fetch from 'cross-fetch'
-
 export type fetchApiResponse<RESPONSE> = Promise<
   { data: null; error: typeof Error } | { data: RESPONSE; error: null }
 >
@@ -21,8 +19,9 @@ export default class ApiService {
     try {
       const res = await fetch(`${this.baseUrl}${path}`, {
         headers: {
-          Authorization: this.authorization,
-          Accept: 'application/json',
+          'Authorization': this.authorization,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
         method,

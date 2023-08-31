@@ -46,13 +46,11 @@ export default class MiroService
     return {
       title: issue.card?.data?.title ?? '',
       description,
-      status:
-        (issue.tags
-          .find((tag) =>
-            GenericIssueStatusOptions.some((status) => status === tag.title.toUpperCase())
-          )
-          ?.title?.toUpperCase() as Uppercase<GenericIssueStatus>) ??
-        GenericIssueStatusOptions['2'],
+      status: issue.tags
+        .find((tag) =>
+          GenericIssueStatusOptions.some((status) => status === tag.title.toUpperCase())
+        )
+        ?.title?.toUpperCase() as Uppercase<GenericIssueStatus>,
       assigneeEmail,
       origin: 'MIRO',
       id: issue.card.id,

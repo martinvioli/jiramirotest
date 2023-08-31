@@ -14,7 +14,7 @@ import {
 import ApiService from './api.service'
 import { GenericIssueService } from 'App/types/services.types'
 
-type IssueServiceOriginLabel = `${GenericIssueService}_ID=${string}`
+type IssueServiceOriginLabel = `${GenericIssueService}_ID:${string}`
 
 export default class JiraService
   implements Pick<BaseServiceInterface<any, IssueJiraResponse>, 'fromGeneric'>
@@ -37,7 +37,7 @@ export default class JiraService
   }
 
   generateOriginLabel(origin: GenericIssueService, id: string): IssueServiceOriginLabel {
-    return `${origin}_ID=${id}`
+    return `${origin}_ID:${id}`
   }
 
   async findIssueIdByLabel(issueServiceOrginLabel: IssueServiceOriginLabel): Promise<string> {
@@ -51,7 +51,7 @@ export default class JiraService
   async parseFromGeneric(
     genericIssue: GenericIssue
   ): Promise<{ id?: string; payload: AtLeast<IssueJiraPostPayload, 'fields' | 'update'> }> {
-    const COMMON_ISSUE_TYPE_ID = '10252'
+    const COMMON_ISSUE_TYPE_ID = '10021'
     const assigneeId = await this.findAccountIdByEmail(genericIssue.assigneeEmail)
     const issueOriginIdLabel = this.generateOriginLabel(genericIssue.origin, genericIssue.id)
 
@@ -69,14 +69,12 @@ export default class JiraService
             id: this.JIRA_PROJECT_ID,
           },
           summary: genericIssue.title,
+          duedate: '3000-01-01',
         },
         update: {
           labels: [
             {
               add: issueOriginIdLabel,
-            },
-            {
-              remove: issueOriginIdLabel,
             },
           ],
         },
@@ -104,7 +102,8 @@ export default class JiraService
     function getTransitionId(genericIssueStatus: GenericIssueStatus) {
       return response?.data?.transitions?.find(
         (transition) =>
-          transition.to.name.toUpperCase() === GenericToJiraStatus[genericIssueStatus].toUpperCase()
+          transition.to.name.toUpperCase() ===
+          GenericToJiraStatus[genericIssueStatus]?.toUpperCase()
       )?.id!
     }
     const transitionId = getTransitionId(statusName)

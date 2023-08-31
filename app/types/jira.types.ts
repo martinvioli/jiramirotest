@@ -31,6 +31,7 @@ export interface IssueJiraPostPayload {
     project: {
       id: string
     }
+    duedate: string
   }
   update: {
     labels: UpdateLabels[]
