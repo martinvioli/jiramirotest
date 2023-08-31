@@ -14,6 +14,7 @@ export default class Adapter<
   }
 
   async connect(body) {
+    console.log(body)
     const generic = await this.inputService.toGeneric(body)
     await this.outputService.fromGeneric(generic)
   }
