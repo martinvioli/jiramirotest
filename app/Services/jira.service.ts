@@ -122,6 +122,14 @@ export default class JiraService
       path,
       jiraIssuePayload.payload
     )
+    if (jiraIssuePayload.payload?.transition) {
+      const transitionsPath = path + '/transitions'
+      await this.ApiService.fetch<IssueJiraResponse>(
+        'POST',
+        transitionsPath,
+        jiraIssuePayload.payload.transition
+      )
+    }
     return response?.data!
   }
 
