@@ -127,7 +127,9 @@ export default class JiraService
       await this.ApiService.fetch<IssueJiraResponse>(
         'POST',
         transitionsPath,
-        jiraIssuePayload.payload.transition
+        (({ transition }: IssueJiraPostPayload) => ({ transition }))(
+          jiraIssuePayload.payload as IssueJiraPostPayload
+        )
       )
     }
     return response?.data!
