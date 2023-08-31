@@ -41,11 +41,15 @@ export default class MiroService
     return genericIssue
   }
 
+  convertHtmlToText(htmlString: string | undefined): string {
+    return htmlString?.replace(/<[^>]*(>|$)|&nbsp;|&zwnj;|&raquo;|&laquo;|&gt;/g, '') ?? ''
+  }
+
   private parseToGeneric(issue: MiroIssueResponse): GenericIssue {
     const { description, assigneeEmail } = this.deregexifyDescription(issue.card?.data?.description)
     return {
-      title: issue.card?.data?.title ?? '',
-      description,
+      title: this.convertHtmlToText(issue.card?.data?.title) ?? '',
+      description: this.convertHtmlToText(description),
       status: issue.tags
         .find((tag) =>
           GenericIssueStatusOptions.some((status) => status === tag.title.toUpperCase())
