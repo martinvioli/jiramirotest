@@ -1,3 +1,5 @@
+import fetch from 'cross-fetch'
+
 export type fetchApiResponse<RESPONSE> = Promise<
   { data: null; error: typeof Error } | { data: RESPONSE; error: null }
 >
