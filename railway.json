@@ -6,6 +6,7 @@
   },
   "deploy": {
     "numReplicas": 1,
+    "startCommand": "cd build && npm ci --production && node server.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
