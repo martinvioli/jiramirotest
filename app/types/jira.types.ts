@@ -4,6 +4,7 @@ export interface IssueJiraResponse {
   self: string
   key: string
   fields: Fields
+  transitions: Transition[]
 }
 
 export interface JiraUser {
@@ -121,4 +122,16 @@ export enum GenericToJiraStatus {
   'IN REVIEW' = 'In Review',
   'READY FOR PROD' = 'Ready For Prod',
   'DONE' = 'Finished',
+}
+
+export interface Transition {
+  id: string
+  name: string
+  to: Status
+  hasScreen: boolean
+  isGlobal: boolean
+  isInitial: boolean
+  isAvailable: boolean
+  isConditional: boolean
+  isLooped: boolean
 }

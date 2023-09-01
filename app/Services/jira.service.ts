@@ -40,12 +40,14 @@ export default class JiraService
     return `${origin}_ID:${id}`
   }
 
-  async findIssueIdByLabel(issueServiceOrginLabel: IssueServiceOriginLabel): Promise<string> {
+  async findIssueByLabel(
+    issueServiceOrginLabel: IssueServiceOriginLabel
+  ): Promise<IssueJiraResponse | undefined> {
     const response = await this.ApiService.fetch<{ issues: IssueJiraResponse[] }>(
       'GET',
-      `/search?jql=labels=${issueServiceOrginLabel}`
+      `/search?jql=labels=${issueServiceOrginLabel}&expand=transitions`
     )
-    return response.data?.issues?.at(0)?.id ?? ''
+    return response.data?.issues?.at(0)
   }
 
   async parseFromGeneric(
@@ -81,35 +83,38 @@ export default class JiraService
       },
     }
 
-    const issueId = await this.findIssueIdByLabel(issueOriginIdLabel)
-    if (issueId) {
-      response.id = issueId
-      const { error, transitionId } = await this.translateStatus(issueId, genericIssue.status)
-      response.payload.transition = { id: transitionId }
-      if (error) response.payload.fields.summary = `${error} ${response.payload.fields.summary}`
+    const issue = await this.findIssueByLabel(issueOriginIdLabel)
+    if (issue) {
+      response.id = issue.id
+      const { error, transitionId } = await this.translateStatus(issue, genericIssue.status)
+      if (transitionId) {
+        response.payload.transition = { id: transitionId }
+      }
+      if (error) {
+        response.payload.fields.summary = `${error} ${response.payload.fields.summary}`
+      }
     }
 
     return response
   }
 
   async translateStatus(
-    issueId: string,
+    issue: IssueJiraResponse,
     statusName: GenericIssueStatus
-  ): Promise<{ error: string | false; transitionId: string }> {
-    const response = await this.ApiService.fetch<{
-      transitions: { id: string; name: string; to: { name: string } }[]
-    }>('GET', `/issue/${issueId}/transitions`)
+  ): Promise<{ error: string | false; transitionId: string | false }> {
     function getTransitionId(genericIssueStatus: GenericIssueStatus) {
-      return response?.data?.transitions?.find(
+      return issue.transitions?.find(
         (transition) =>
           transition.to.name.toUpperCase() ===
           GenericToJiraStatus[genericIssueStatus]?.toUpperCase()
-      )?.id!
+      )?.id
     }
-    const transitionId = getTransitionId(statusName)
-    const defaultTransitionId = getTransitionId(GenericIssueStatusOptions['2'])
-    const error = !transitionId && '[⚠️ ERROR JIRAMIRO]'
-    return { error, transitionId: transitionId ?? defaultTransitionId }
+    const desiredTransitionId = getTransitionId(statusName)
+    const hasChangedStatus = GenericToJiraStatus[statusName] !== issue?.fields?.status?.name
+    const defaultInvalidTransitionId =
+      hasChangedStatus && getTransitionId(GenericIssueStatusOptions['2'])
+    const error = !desiredTransitionId && hasChangedStatus && '[⚠️ CAMBIO DE ESTADO INVÁLIDO]'
+    return { error, transitionId: desiredTransitionId ?? defaultInvalidTransitionId! }
   }
 
   async fromGeneric(genericIssue: GenericIssue) {
