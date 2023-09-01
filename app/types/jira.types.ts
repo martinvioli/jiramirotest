@@ -114,7 +114,7 @@ interface StatusCategory {
 }
 
 export enum GenericToJiraStatus {
-  'TO DO' = 'Tareas por haacer',
+  'TO DO' = 'Tareas por hacer',
   'IN PROGRESS' = 'En progreso',
   'BLOCKED' = 'Bloqueada',
   'READY FOR QA' = 'Ready for QA',
