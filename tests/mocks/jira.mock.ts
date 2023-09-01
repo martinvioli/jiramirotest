@@ -6,7 +6,7 @@ const JIRA_API_REST_URL = Env.get('JIRA_API_REST_URL')
 export function mockPostIssue() {
   return nock(JIRA_API_REST_URL)
     .post('/issue')
-    .reply(201, (_, requestBody) => {
+    .reply(201, (_, _requestBody) => {
       return {
         id: '49983',
         key: 'TEST-1',
@@ -18,7 +18,7 @@ export function mockPostIssue() {
 export function mockUser(displayName: string) {
   return nock(JIRA_API_REST_URL)
     .get(`/user/search?query=${displayName.split(' ').join('&query=')}`)
-    .reply(201, (_, requestBody) => {
+    .reply(201, (_, _requestBody) => {
       return [
         {
           self: 'https://genfree.atlassian.net/rest/api/3/user?accountId=63e14473614cb4ba5301bb98',

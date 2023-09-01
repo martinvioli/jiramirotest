@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import JiraService from 'App/services/jira.service'
 import { mockPostIssue, mockUser } from '../mocks/jira.mock'
+import JiraService from 'App/Services/jira.service'
 
 test('from generic', async ({ assert }) => {
   const TASK_ID_JIRA = '10252'
