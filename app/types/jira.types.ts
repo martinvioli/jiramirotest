@@ -23,9 +23,6 @@ export interface IssueJiraPostPayload {
   fields: {
     summary: string
     description: string | Description
-    assignee: {
-      id: string
-    }
     issuetype: {
       id: string
     }
@@ -36,10 +33,12 @@ export interface IssueJiraPostPayload {
   }
   update: {
     labels: UpdateLabels[]
+    assignee: UpdateAssignee[]
   }
   transition: { id: string }
 }
 
+type UpdateAssignee = { set: { id: string } | string }
 type UpdateLabels = { add: string } | { remove: string }
 
 interface Fields {

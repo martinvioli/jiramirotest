@@ -56,13 +56,9 @@ export default class JiraService
     const COMMON_ISSUE_TYPE_ID = '10021'
     const assigneeId = await this.findAccountIdByEmail(genericIssue.assigneeEmail)
     const issueOriginIdLabel = this.generateOriginLabel(genericIssue.origin, genericIssue.id)
-
     let response: { id?: string; payload: AtLeast<IssueJiraPostPayload, 'fields' | 'update'> } = {
       payload: {
         fields: {
-          assignee: {
-            id: assigneeId,
-          },
           description: genericIssue.description,
           issuetype: {
             id: COMMON_ISSUE_TYPE_ID,
@@ -77,6 +73,11 @@ export default class JiraService
           labels: [
             {
               add: issueOriginIdLabel,
+            },
+          ],
+          assignee: [
+            {
+              set: assigneeId && { id: assigneeId },
             },
           ],
         },
